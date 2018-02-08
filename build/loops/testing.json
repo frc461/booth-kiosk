@@ -1,0 +1,30 @@
+{
+  "name" : "Testing",
+  "presets" : {
+    "image-carousel1" : {
+      "name" : "Testing",
+      "type" : "image-carousel",
+      "images" : [
+        "350x350.png"
+      ]
+    },
+    "image-carousel2" : {
+      "name" : "Testing",
+      "type" : "image-carousel",
+      "images" : [
+        "FFFFFF.png"
+      ]
+    },
+    "fullscreen-pdf-test" : {
+      "name" : "PDF Demo",
+      "type" : "fullscreen_pdf",
+      "file" : "Testiing Presentation.pdf"
+    },
+    "video-test" : {
+      "name" : "Demo Video",
+      "type" : "video",
+      "file" : "test.mp4",
+      "transitionDelay" : "100"
+    }
+  }
+}

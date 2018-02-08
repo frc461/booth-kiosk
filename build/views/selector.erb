@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<body>
+  <head>
+    <link href="/css/materialize.min.css" rel="stylesheet" />
+    <link href="/css/coverflow.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <% if no_default then %>
+      <%=  "<h1>You did not set a default</h1>" %>
+      <% end %>
+      <h1>Select a loop to play</h1>
+      <a class="dropdown-button btn" href="#" data-activates="loop-select-drop">No Loop Selected</a>
+      <ul class="dropdown-content" id="loop-select-drop">
+        <% @loops = JSON.parse(File.read('loops/all.json')) %>
+        <% @loops.each do |loop| %>
+          <li>
+            <%= "<a href='/pres/" + loop[1]['name'].downcase + "/'>" + loop[1]['name'] + "</a>"  %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/materialize.min.js"></script>
+    <script src="/js/coverflow.min.js"></script>
+  </body>
+</body>

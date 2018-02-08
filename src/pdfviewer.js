@@ -31,12 +31,6 @@ class PdfViewer{
         });
       });
   }
-
-  printTest(){
-    console.log("test");
-  }
-
-
 }
 
 export default PdfViewer;
