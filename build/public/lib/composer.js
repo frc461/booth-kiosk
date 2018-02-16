@@ -2055,6 +2055,8 @@ module.exports = ReactPropTypesSecret;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
@@ -2068,6 +2070,12 @@ var _HandyLib = __webpack_require__(29);
 var _HandyLib2 = _interopRequireDefault(_HandyLib);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var handyLib = new _HandyLib2.default();
 
@@ -2092,6 +2100,95 @@ var handyLib = new _HandyLib2.default();
 //   <SelectButton name="test" />,
 //   $('#mainContainer')[0]
 // )
+
+var EditableName = function (_React$Component) {
+  _inherits(EditableName, _React$Component);
+
+  function EditableName(props) {
+    _classCallCheck(this, EditableName);
+
+    var _this = _possibleConstructorReturn(this, (EditableName.__proto__ || Object.getPrototypeOf(EditableName)).call(this, props));
+
+    _this.state = { mode: 'text', name: _this.props.name };
+    return _this;
+  }
+
+  _createClass(EditableName, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var p = this;
+      var dNode = _reactDom2.default.findDOMNode(p);
+      $(dNode).find('i.editable-name').hide();
+      $(_reactDom2.default.findDOMNode(this)).click(function (e) {
+        if ($(e.target).is('i').hasClass('editble-name')) {
+          p.setState({ mode: 'input' });
+        } else if ($(e.target).is('i').hasClass('editable-name-accept')) {
+          console.log('yes');
+        }
+      });
+      $(_reactDom2.default.findDOMNode(this)).hover(function (e) {
+        if (e.type == 'mouseenter') {
+          $(dNode).find('i.editable-name').fadeIn();
+        } else {
+          $(dNode).find('i.editable-name').fadeOut();
+        }
+      });
+    }
+  }, {
+    key: 'updateInputValue',
+    value: function updateInputValue(e) {
+      this.setState({ name: e.target.value });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var textStyle = {
+        cursor: 'pointer'
+      };
+      if (this.state.mode == 'text') {
+        return [_react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'span',
+            { className: 'editable-name', 'data-key': this.props.data_key },
+            this.state.name
+          ),
+          _react2.default.createElement(
+            'i',
+            { className: 'editable-name tiny material-icons', 'data-key': this.props.data_key, style: textStyle },
+            'edit'
+          )
+        )];
+      } else if (this.state.mode == 'input') {
+        return _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'div',
+            { 'class': 'valign-wrapper' },
+            _react2.default.createElement(
+              'div',
+              { 'class': 'input-field inline' },
+              _react2.default.createElement('input', { 'class': 'validate', value: this.state.name, 'data-key': this.props.data_key, onChange: function onChange(e) {
+                  return _this2.updateInputValue(e);
+                } })
+            ),
+            _react2.default.createElement(
+              'i',
+              { 'class': 'material-icons editable-name-accept' },
+              'check'
+            )
+          )
+        );
+      }
+    }
+  }]);
+
+  return EditableName;
+}(_react2.default.Component);
 
 $.getJSON('/loop/all.json', function (data) {
   var keys = Object.keys(data);
@@ -2153,24 +2250,86 @@ $.getJSON('/loop/all.json', function (data) {
     // console.log($(e.target).data('name'));
     if ($(e.target).parent().parent().is('#loopSelect')) {
       $('#loopSelectButton').text($(e.target).text());
-      _reactDom2.default.render(_react2.default.createElement(
-        'div',
-        { id: 'slides' },
-        _react2.default.createElement(
-          'div',
-          null,
-          _react2.default.createElement(
-            'p',
-            null,
-            'test'
-          )
-        )
-      ), $('#loopEditor')[0]);
-      var drake = dragula(document.getElementById('slides'), {
-        direction: 'vertical'
-      });
+      renderSlidesList('testing.json', $('#loopEditor')[0]);
+      // $('#slides').children().each(function(){
+      //   // console.log(this);
+      //   console.log($('li.collection-item').index(this));
+      // });
     }
   });
+  function renderSlidesList(name, target) {
+    console.log(name);
+    $.getJSON('/loop/' + name, function (slide_data) {
+
+      var keys = Object.keys(slide_data['presets']);
+      var editableElements = keys.map(function (key) {
+        return _react2.default.createElement(
+          'li',
+          { className: 'collection-item avatar #eeeeee grey lighten-3' },
+          _react2.default.createElement(EditableName, { name: slide_data['presets'][key]['name'], data_key: key }),
+          _react2.default.createElement(
+            'i',
+            { className: 'secondary-content material-icons text-black grab' },
+            'drag_handle'
+          )
+        );
+      });
+      _reactDom2.default.render([_react2.default.createElement('div', { className: 'divider' }), _react2.default.createElement(
+        'ul',
+        { id: 'slides', className: 'collection' },
+        editableElements
+      )], target);
+      //   $('i.grab').css('cursor', 'grab');
+      //   var drake = dragula([document.getElementById('slides')], {
+      //     direction: 'vertical',
+      //     moves: function(el, source, handle, sibling){
+      //       return true;
+      //     },
+      //     isContainer: function(el){
+      //       return false;
+      //     }
+      //   });
+      //   // $('span.editable-name').append("");
+      //   $('i.editable-name').hide();
+      //   $('span.editable-name').hover(function(e){
+      //     if(e.type == "mouseenter"){
+      //       $(e.target).find('i.editable-name').fadeIn();
+      //     }else if(e.type == "mouseleave"){
+      //       $(e.target).find('i.editable-name').fadeOut();
+      //     }
+      //   });
+      //   function renderEditableName(e){
+      //     console.log(e.target);
+      //     var key = $(e.target).parent().data('key');
+      //     var obj = slide_data['presets'][key];
+      //     var slide_name = obj['name'];
+      //     $(e.target).data('key').parent().html(`<div class='row'><div class='col s6 m6'><div class='valign-wrapper'><div class='input-field inline'><input class='validate' value='${slide_name}' data-key='${key}'/></div><i class="material-icons editable-name-accept">check</i></div></div><div class='col s6 m6'></div>`);
+      //     $('i.editable-name-accept').click(function(e){
+      //       // console.log();
+      //       var input_obj = $(e.target).parent().find('input');
+      //       slide_data['presets'][input_obj.data('key')]['name'] = input_obj.val();
+      //       console.log(slide_data['presets'][input_obj.data('key')]['name']);
+      //       $.ajax({
+      //         type: "POST",
+      //         url: '/update/' + name + '/' + input_obj.data('key') + "/" + 'name',
+      //         data: input_obj.val()
+      //       });
+      //       // $(e.target).parent().parent().html(`<span class='editable-name'>${input_obj.val()}</span>`);
+      //     });
+      //   }
+      //   function bindEditableNames(){
+      //     $('li.collection-item').click(function(e){
+      //       console.log(e);
+      //       if(e.target = 'i.editable-name'){
+      //         renderEditableName(e);
+      //       }
+      //       // renderEditableName(e);
+      //     });
+      //   }
+      //   bindEditableNames();
+      // });
+    });
+  }
 });
 
 /***/ }),

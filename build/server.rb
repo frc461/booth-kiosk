@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'json'
 
+set :bind, '0.0.0.0'
+
 get '/loops/:name' do
 
 end
@@ -47,3 +49,23 @@ end
 get '/composer' do
   erb :composer
 end
+
+post '/update/:loop/:slide/:key' do
+  @json = JSON.parse(File.read('loops/' + params['loop']))
+  @json['presets'][params['slide']][params['key']] = request.body.read
+  puts JSON.pretty_generate @json
+    File.open("loops/" + params['loop'], "w") do |f|
+      f.write(JSON.pretty_generate @json)
+    end
+
+end
+
+# post '/update/eveything/:name/:key' do
+#   @json = JSON.parse(File.read("loops/all.json"))
+#   puts request.body.read
+#   @json[params['name']][params['key']] = request.body.read
+#   puts @json
+#   File.open("loops/all.json", "w") do |f|
+#     f.write(@json)
+#   end
+# end
