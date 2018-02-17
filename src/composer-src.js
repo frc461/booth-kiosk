@@ -36,10 +36,15 @@ class EditableName extends React.Component {
     const dNode = ReactDOM.findDOMNode(p);
     $(dNode).find('i.editable-name').hide();
     $(ReactDOM.findDOMNode(this)).click(function(e){
-      if($(e.target).is('i').hasClass('editble-name')){
+      if($(e.target).is('i') && $(e.target).hasClass('editable-name')){
         p.setState({mode: 'input'});
-      }else if($(e.target).is('i').hasClass('editable-name-accept')){
-        console.log('yes');
+      }else if($(e.target).is('i') && $(e.target).hasClass('editable-name-accept')){
+              $.ajax({
+                type: "POST",
+                url: '/update/' + p.props.file + '/' + p.props.data_key +  "/" + 'name',
+                data: p.state.name
+              });
+        p.setState({mode: 'text'});
       }
     });
     $(ReactDOM.findDOMNode(this)).hover(function(e){
@@ -60,7 +65,7 @@ class EditableName extends React.Component {
     if(this.state.mode == 'text'){
       return [<div><span className="editable-name" data-key={this.props.data_key}>{this.state.name}</span><i className='editable-name tiny material-icons' data-key={this.props.data_key} style={textStyle}>edit</i></div>];
     }else if(this.state.mode == 'input'){
-      return <div><div class='valign-wrapper'><div class='input-field inline'><input class='validate' value={this.state.name} data-key={this.props.data_key} onChange={(e) => this.updateInputValue(e)}/></div><i class="material-icons editable-name-accept">check</i></div></div>;
+      return <div><div className='valign-wrapper'><div className='input-field inline'><input className='validate' value={this.state.name} data-key={this.props.data_key} onChange={(e) => this.updateInputValue(e)}/></div><i className="material-icons editable-name-accept" style={textStyle}>check</i></div></div>;
     }
   }
 }
@@ -110,7 +115,7 @@ $.getJSON('/loop/all.json', function(data){
     $.getJSON(`/loop/${name}`, function(slide_data){
 
       var keys = Object.keys(slide_data['presets']);
-      var editableElements = keys.map((key) => <li className="collection-item avatar #eeeeee grey lighten-3"><EditableName name={slide_data['presets'][key]['name']} data_key={key} /><i className="secondary-content material-icons text-black grab">drag_handle</i></li>)
+      var editableElements = keys.map((key) => <li className="collection-item avatar #eeeeee grey lighten-3"><EditableName name={slide_data['presets'][key]['name']} data_key={key} file={name} /><i className="secondary-content material-icons text-black grab">drag_handle</i></li>)
       ReactDOM.render([<div className="divider"></div>,<ul id="slides" className="collection">{editableElements}</ul>], target);
     //   $('i.grab').css('cursor', 'grab');
     //   var drake = dragula([document.getElementById('slides')], {

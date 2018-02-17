@@ -2120,10 +2120,15 @@ var EditableName = function (_React$Component) {
       var dNode = _reactDom2.default.findDOMNode(p);
       $(dNode).find('i.editable-name').hide();
       $(_reactDom2.default.findDOMNode(this)).click(function (e) {
-        if ($(e.target).is('i').hasClass('editble-name')) {
+        if ($(e.target).is('i') && $(e.target).hasClass('editable-name')) {
           p.setState({ mode: 'input' });
-        } else if ($(e.target).is('i').hasClass('editable-name-accept')) {
-          console.log('yes');
+        } else if ($(e.target).is('i') && $(e.target).hasClass('editable-name-accept')) {
+          $.ajax({
+            type: "POST",
+            url: '/update/' + p.props.file + '/' + p.props.data_key + "/" + 'name',
+            data: p.state.name
+          });
+          p.setState({ mode: 'text' });
         }
       });
       $(_reactDom2.default.findDOMNode(this)).hover(function (e) {
@@ -2168,17 +2173,17 @@ var EditableName = function (_React$Component) {
           null,
           _react2.default.createElement(
             'div',
-            { 'class': 'valign-wrapper' },
+            { className: 'valign-wrapper' },
             _react2.default.createElement(
               'div',
-              { 'class': 'input-field inline' },
-              _react2.default.createElement('input', { 'class': 'validate', value: this.state.name, 'data-key': this.props.data_key, onChange: function onChange(e) {
+              { className: 'input-field inline' },
+              _react2.default.createElement('input', { className: 'validate', value: this.state.name, 'data-key': this.props.data_key, onChange: function onChange(e) {
                   return _this2.updateInputValue(e);
                 } })
             ),
             _react2.default.createElement(
               'i',
-              { 'class': 'material-icons editable-name-accept' },
+              { className: 'material-icons editable-name-accept', style: textStyle },
               'check'
             )
           )
@@ -2266,7 +2271,7 @@ $.getJSON('/loop/all.json', function (data) {
         return _react2.default.createElement(
           'li',
           { className: 'collection-item avatar #eeeeee grey lighten-3' },
-          _react2.default.createElement(EditableName, { name: slide_data['presets'][key]['name'], data_key: key }),
+          _react2.default.createElement(EditableName, { name: slide_data['presets'][key]['name'], data_key: key, file: name }),
           _react2.default.createElement(
             'i',
             { className: 'secondary-content material-icons text-black grab' },
