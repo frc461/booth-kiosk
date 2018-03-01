@@ -12,7 +12,7 @@ export default class HandyLib {
   getPresJson(callback){
     var path_ = this.getJsonFile();
 
-    var val = $.getJSON(`/loop/${path_}`, function(data){
+    var val = $.getJSON(`/loop/${path_}?rand=` + Math.random(), function(data){
       callback(data);
     });
   }

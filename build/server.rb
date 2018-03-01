@@ -57,15 +57,15 @@ post '/update/:loop/:slide/:key' do
     File.open("loops/" + params['loop'], "w") do |f|
       f.write(JSON.pretty_generate @json)
     end
+    send_file 'loops/' + params['loop']
 
 end
 
-# post '/update/eveything/:name/:key' do
-#   @json = JSON.parse(File.read("loops/all.json"))
-#   puts request.body.read
-#   @json[params['name']][params['key']] = request.body.read
-#   puts @json
-#   File.open("loops/all.json", "w") do |f|
-#     f.write(@json)
-#   end
-# end
+post '/updateeverything/:name/:key' do
+  @json = JSON.parse(File.read("loops/all.json"))
+  @json[params['name']][params['key']] = request.body.read
+  File.open("loops/all.json", "w") do |f|
+    f.write(JSON.pretty_generate @json)
+  end
+  send_file 'loops/all.json'
+end

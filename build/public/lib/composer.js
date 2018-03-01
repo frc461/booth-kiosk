@@ -2125,8 +2125,9 @@ var EditableName = function (_React$Component) {
         } else if ($(e.target).is('i') && $(e.target).hasClass('editable-name-accept')) {
           $.ajax({
             type: "POST",
-            url: '/update/' + p.props.file + '/' + p.props.data_key + "/" + 'name',
-            data: p.state.name
+            url: '/update/' + p.props.file + '/' + p.props.data_key + "/" + 'name?rand=' + Math.random(),
+            data: p.state.name,
+            success: Materialize.toast("Successfully changed name!")
           });
           p.setState({ mode: 'text' });
         }
@@ -2195,7 +2196,83 @@ var EditableName = function (_React$Component) {
   return EditableName;
 }(_react2.default.Component);
 
-$.getJSON('/loop/all.json', function (data) {
+var TypeDropdown = function (_React$Component2) {
+  _inherits(TypeDropdown, _React$Component2);
+
+  function TypeDropdown(props) {
+    _classCallCheck(this, TypeDropdown);
+
+    return _possibleConstructorReturn(this, (TypeDropdown.__proto__ || Object.getPrototypeOf(TypeDropdown)).call(this, props));
+  }
+
+  _createClass(TypeDropdown, [{
+    key: 'render',
+    value: function render() {}
+  }]);
+
+  return TypeDropdown;
+}(_react2.default.Component);
+
+var EditableLoopName = function (_React$Component3) {
+  _inherits(EditableLoopName, _React$Component3);
+
+  function EditableLoopName(props) {
+    _classCallCheck(this, EditableLoopName);
+
+    var _this4 = _possibleConstructorReturn(this, (EditableLoopName.__proto__ || Object.getPrototypeOf(EditableLoopName)).call(this, props));
+
+    _this4.state = { name: _this4.props.name };
+    return _this4;
+  }
+
+  _createClass(EditableLoopName, [{
+    key: 'changeValue',
+    value: function changeValue(e) {
+      function success(e) {
+        console.log(e);
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/updateeverything/' + this.props.key_val + '/name?rand=' + Math.random(),
+        data: this.state.name,
+        success: Materialize.toast("Successfully updated loop name!")
+      }); //.success(function(e){
+      //console.log('test');
+      //})
+
+    }
+  }, {
+    key: 'updateValue',
+    value: function updateValue(e) {
+      this.setState({ name: e.target.value });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      //TODO: Create non editable state
+      return _react2.default.createElement(
+        'div',
+        { className: 'valign-wrapper' },
+        _react2.default.createElement('input', { value: this.state.name, onChange: function onChange(e) {
+            return _this5.updateValue(e);
+          } }),
+        _react2.default.createElement(
+          'i',
+          { className: 'material-icons', style: { cursor: 'pointer' }, onClick: function onClick(e) {
+              return _this5.changeValue(e);
+            } },
+          'check'
+        )
+      );
+    }
+  }]);
+
+  return EditableLoopName;
+}(_react2.default.Component);
+
+$.getJSON('/loop/all.json?rand=' + Math.random(), function (data) {
   var keys = Object.keys(data);
   console.log(keys);
   var allItems = keys.map(function (key) {
@@ -2254,8 +2331,12 @@ $.getJSON('/loop/all.json', function (data) {
     // console.log($(e).data('name'));
     // console.log($(e.target).data('name'));
     if ($(e.target).parent().parent().is('#loopSelect')) {
-      $('#loopSelectButton').text($(e.target).text());
-      renderSlidesList('testing.json', $('#loopEditor')[0]);
+      // $('#loopSelectButton').text($(e.target).text());
+      // console.log($('a');
+      $('ul#loopSelect').remove();
+      $('a#loopSelectButton').replaceWith("<div id='loopNamePlaceholder'></div>");
+      _reactDom2.default.render(_react2.default.createElement(EditableLoopName, { name: $(e.target).text(), key_val: $(e.target).data('name') }), $('div#loopNamePlaceholder')[0]);
+      renderSlidesList(data[$(e.target).data('name')]['file'], $('#loopEditor')[0]);
       // $('#slides').children().each(function(){
       //   // console.log(this);
       //   console.log($('li.collection-item').index(this));
@@ -2264,7 +2345,7 @@ $.getJSON('/loop/all.json', function (data) {
   });
   function renderSlidesList(name, target) {
     console.log(name);
-    $.getJSON('/loop/' + name, function (slide_data) {
+    $.getJSON('/loop/' + name + '?rand=' + Math.random(), function (slide_data) {
 
       var keys = Object.keys(slide_data['presets']);
       var editableElements = keys.map(function (key) {
@@ -2284,55 +2365,27 @@ $.getJSON('/loop/all.json', function (data) {
         { id: 'slides', className: 'collection' },
         editableElements
       )], target);
-      //   $('i.grab').css('cursor', 'grab');
-      //   var drake = dragula([document.getElementById('slides')], {
-      //     direction: 'vertical',
-      //     moves: function(el, source, handle, sibling){
-      //       return true;
-      //     },
-      //     isContainer: function(el){
-      //       return false;
-      //     }
-      //   });
-      //   // $('span.editable-name').append("");
-      //   $('i.editable-name').hide();
-      //   $('span.editable-name').hover(function(e){
-      //     if(e.type == "mouseenter"){
-      //       $(e.target).find('i.editable-name').fadeIn();
-      //     }else if(e.type == "mouseleave"){
-      //       $(e.target).find('i.editable-name').fadeOut();
-      //     }
-      //   });
-      //   function renderEditableName(e){
-      //     console.log(e.target);
-      //     var key = $(e.target).parent().data('key');
-      //     var obj = slide_data['presets'][key];
-      //     var slide_name = obj['name'];
-      //     $(e.target).data('key').parent().html(`<div class='row'><div class='col s6 m6'><div class='valign-wrapper'><div class='input-field inline'><input class='validate' value='${slide_name}' data-key='${key}'/></div><i class="material-icons editable-name-accept">check</i></div></div><div class='col s6 m6'></div>`);
-      //     $('i.editable-name-accept').click(function(e){
-      //       // console.log();
-      //       var input_obj = $(e.target).parent().find('input');
-      //       slide_data['presets'][input_obj.data('key')]['name'] = input_obj.val();
-      //       console.log(slide_data['presets'][input_obj.data('key')]['name']);
-      //       $.ajax({
-      //         type: "POST",
-      //         url: '/update/' + name + '/' + input_obj.data('key') + "/" + 'name',
-      //         data: input_obj.val()
-      //       });
-      //       // $(e.target).parent().parent().html(`<span class='editable-name'>${input_obj.val()}</span>`);
-      //     });
-      //   }
-      //   function bindEditableNames(){
-      //     $('li.collection-item').click(function(e){
-      //       console.log(e);
-      //       if(e.target = 'i.editable-name'){
-      //         renderEditableName(e);
-      //       }
-      //       // renderEditableName(e);
-      //     });
-      //   }
-      //   bindEditableNames();
-      // });
+      var dragObj = dragula($('#slides')[0], {
+        isContainer: function isContainer(el) {
+          return false; // only elements in drake.containers will be taken into account
+        },
+        moves: function moves(el, source, handle, sibling) {
+          return true; // elements are always draggable by default
+        },
+        accepts: function accepts(el, target, source, sibling) {
+          return true; // elements can be dropped in any of the `containers` by default
+        },
+        invalid: function invalid(el, handle) {
+          return false; // don't prevent any drags from initiating by default
+        },
+        direction: 'vertical', // Y axis is considered when determining where an element would be dropped
+        copy: false, // elements are moved by default, not copied
+        copySortSource: false, // elements in copy-source containers can be reordered
+        revertOnSpill: false, // spilling will put the element back where it was dragged from, if this is true
+        removeOnSpill: false, // spilling will `.remove` the element, if this is true
+        mirrorContainer: document.body, // set the element that gets mirror elements appended
+        ignoreInputTextSelection: true
+      });
     });
   }
 });
@@ -18232,7 +18285,7 @@ var HandyLib = function () {
     value: function getPresJson(callback) {
       var path_ = this.getJsonFile();
 
-      var val = $.getJSON("/loop/" + path_, function (data) {
+      var val = $.getJSON("/loop/" + path_ + "?rand=" + Math.random(), function (data) {
         callback(data);
       });
     }
