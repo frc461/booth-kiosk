@@ -2071,7 +2071,11 @@ var overlay = new _overlaySrc2.default();
 var video = document.getElementById('videoDom');
 handyLib.getPresJson(function (data) {
   overlay.getNextElement(function (elem) {
-    overlay.createOverlayDelay(elem, data['presets'][handyLib.getKey()]['transitionDelay']);
+    if (data['presets'][handyLib.getKey()]['transitionDelay'] != undefined) {
+      overlay.createOverlayDelay(elem, data['presets'][handyLib.getKey()]['transitionDelay']);
+    } else {
+      overlay.createOverlay(elem);
+    }
   });
   var file = data['presets'][handyLib.getKey()]['file'];
   if (file != undefined) {
@@ -18164,7 +18168,7 @@ var InactivityCounter = function (_React$Component) {
   }, {
     key: 'resetCounter',
     value: function resetCounter() {
-      this.setState({ seconds: 40 });
+      this.setState({ seconds: this.props.length });
       $('.overlay').slideUp();
     }
   }, {

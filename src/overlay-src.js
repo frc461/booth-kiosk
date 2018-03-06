@@ -61,7 +61,7 @@ class InactivityCounter extends React.Component{
     }
   }
   resetCounter(){
-    this.setState({seconds: 40});
+    this.setState({seconds: this.props.length});
     $('.overlay').slideUp();
   }
   componentDidMount(){

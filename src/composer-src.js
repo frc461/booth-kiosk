@@ -4,27 +4,7 @@ import HandyLib from './HandyLib'
 
 var handyLib = new HandyLib();
 
-// // $()
-//
-// function test(){
-//   console.log('test');
-// }
-//
-// class SelectButton extends React.Component{
-//   constructor(props){
-//     super(props);
-//   }
-//   componentDidMount(){
-//   }
-//   render(){
-//     return(<li><a data-name={this.props.name}>{this.props.name}</a></li>);
-//   }
-// }
-//
-// ReactDOM.render(
-//   <SelectButton name="test" />,
-//   $('#mainContainer')[0]
-// )
+const slideTypes = {'image-carousel' : 'Image carousel', 'fullscreen_pdf' : 'Fulscreen Pdf', 'video' : 'Video'};
 
 class EditableName extends React.Component {
   constructor(props){
@@ -75,8 +55,30 @@ class TypeDropdown extends React.Component{
   constructor(props){
     super(props);
   }
+  componentDidMount(){
+    $('a.dropdown-button').dropdown();
+  }
+  updateSlideType(obj, type){
+    var domNode = ReactDOM.findDOMNode(this)
+    $.ajax({
+      type: 'POST',
+      url: '/update/' + this.props.loop + '/'+ obj.props.data_key + '/type',
+      data: type,
+      success: function(){
+        Materialize.toast('Successfully change type of ' + obj.props.data_key + ' to ' + type);
+        $(domNode).find('a.dropdown-button').text(slideTypes[type]);
+      }
+    });
+  }
   render(){
-
+    var slideTypesKeys = Object.keys(slideTypes);
+    var dropdownTypes = slideTypesKeys.map((key) => <li><a href="#!" onClick={() => this.updateSlideType(this, key)}>{slideTypes[key]}</a></li>);
+    return <div>
+      <a className="dropdown-button btn" href="#" data-activates={"type-dropdown-" + this.props.data_key}>{slideTypes[this.props.type]}</a>
+      <ul id={"type-dropdown-" + this.props.data_key} className="dropdown-content">
+        {dropdownTypes}
+      </ul>
+    </div>
   }
 }
 
@@ -88,7 +90,7 @@ class EditableLoopName extends React.Component {
   }
   changeValue(e){
     function success(e){
-      console.log(e)
+      // console.log(e)
     }
     $.ajax({
       type: 'POST',
@@ -110,9 +112,27 @@ class EditableLoopName extends React.Component {
   }
 }
 
+class TransitionDelay extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  componentDidMount(){
+    $(ReactDOM.findDOMNode(this)).find('input').val((this.props.default == undefined) ? '40' : this.props.default);
+    $(ReactDOM.findDOMNode(this)).change(function(e){
+      // $.ajax({
+      //   type: 'POST',
+      //   url: '/update/' +
+      // })
+    })
+  }
+  render(){
+    return <p className="range-field"><input type="range" min="0" max="100" /></p>
+  }
+}
+
 $.getJSON('/loop/all.json?rand=' + Math.random(), function(data){
   var keys = Object.keys(data);
-  console.log(keys);
+  // console.log(keys);
   var allItems = keys.map((key) => <li><a href="#" data-name={key}>{data[key]['name']}</a></li>);
   ReactDOM.render([
     <div className="container">
@@ -124,7 +144,12 @@ $.getJSON('/loop/all.json?rand=' + Math.random(), function(data){
         <ul id="loopSelect" className="dropdown-content">{allItems}</ul>
       </div>
     </div>,
-    <div id="loopEditor"></div>
+    <div id="loopEditor"></div>,
+    <div className="fixed-action-btn">
+      <a class="btn-floating btn-large blue tooltipped" data-tooltip="Menu" data-position="left">
+        <i class="large material-icons">menu</i>
+      </a>
+    </div>
   ], $('#mainContainer')[0]);
   $('.dropdown-button').dropdown({
     inDuration: 300,
@@ -155,32 +180,52 @@ $.getJSON('/loop/all.json?rand=' + Math.random(), function(data){
 
   });
   function renderSlidesList(name, target){
-    console.log(name);
     $.getJSON(`/loop/${name}?rand=` + Math.random(), function(slide_data){
 
       var keys = Object.keys(slide_data['presets']);
-      var editableElements = keys.map((key) => <li className="collection-item avatar #eeeeee grey lighten-3"><EditableName name={slide_data['presets'][key]['name']} data_key={key} file={name} /><i className="secondary-content material-icons text-black grab">drag_handle</i></li>)
-      ReactDOM.render([<div className="divider"></div>,<ul id="slides" className="collection">{editableElements}</ul>], target);
-      var dragObj = dragula($('#slides')[0], {
+      var editableElements = keys.map((key) => <li className="collection-item avatar #eeeeee grey lighten-3" data-key={key}><EditableName name={slide_data['presets'][key]['name']} data_key={key} file={name} /><TypeDropdown data_key={key} type={slide_data['presets'][key]['type']} loop={name} /><TransitionDelay default={slide_data['presets'][key]['transitionDelay']}  /><i className="secondary-content material-icons text-black grab">drag_handle</i></li>)
+      ReactDOM.render([<div className="divider"></div>,<div className="row"><div className="col s12"><div className="container"><h1>2. Build the loop</h1></div></div></div>,<ul id="slides" className="collection">{editableElements}</ul>], target);
+      $('.grab').css({cursor: 'grab'})
+      $('.grab').on('mousedown', function(e){
+        $(this).parent().css({cursor: 'grabbing'})
+      });
+      $('.grab').parent().on('mouseup', function(e){
+        $('li').css({cursor: 'default'})
+      });
+      $('.grab').on('mouseup', function(e){
+        $('li.collection-item').css({cursor: 'default'})
+      });
+      var dragObj = dragula({
         isContainer: function (el) {
           return false; // only elements in drake.containers will be taken into account
         },
         moves: function (el, source, handle, sibling) {
-          return true; // elements are always draggable by default
+          if($(handle).hasClass('grab')){
+            return true;
+          }else{
+            return false;
+          }
         },
-        accepts: function (el, target, source, sibling) {
-          return true; // elements can be dropped in any of the `containers` by default
-        },
-        invalid: function (el, handle) {
-          return false; // don't prevent any drags from initiating by default
-        },
-        direction: 'vertical',             // Y axis is considered when determining where an element would be dropped
-        copy: false,                       // elements are moved by default, not copied
-        copySortSource: false,             // elements in copy-source containers can be reordered
-        revertOnSpill: false,              // spilling will put the element back where it was dragged from, if this is true
-        removeOnSpill: false,              // spilling will `.remove` the element, if this is true
-        mirrorContainer: document.body,    // set the element that gets mirror elements appended
-        ignoreInputTextSelection: true
+      });
+      dragObj.containers.push(document.getElementById('slides'));
+      dragObj.on('drop', function(e){
+        // console.log(slide_data['presets']);
+        // var objX = slide_data['presets']
+        var tmpPresets = {};
+        $('ul#slides').children().each(function(i, val){
+          // console.log(slide_data['presets'][$(val).data('key')])
+          tmpPresets[$(val).data('key')] = slide_data['presets'][$(val).data('key')]
+          // $('ul#slides').children()
+          // console.log($(val).data('key'));
+        });
+        // console.log(tmpPresets);
+        $.ajax({
+          type: 'POST',
+          url: '/updateBulkPresets/' + name + '?rand=' + Math.random(),
+          data: JSON.stringify(tmpPresets),
+          contentType : 'application/json',
+          success: Materialize.toast("Successfully updated loop order!")
+        })
       });
   });
 }

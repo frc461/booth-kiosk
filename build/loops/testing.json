@@ -1,15 +1,8 @@
 {
   "name": "Testing",
   "presets": {
-    "image-carousel1": {
-      "name": "123Testing123123",
-      "type": "image-carousel",
-      "images": [
-        "350x350.png"
-      ]
-    },
     "image-carousel2": {
-      "name": "Testing",
+      "name": "Testingkufhdlfh",
       "type": "image-carousel",
       "images": [
         "FFFFFF.png"
@@ -18,7 +11,14 @@
     "fullscreen-pdf-test": {
       "name": "PDF Demo",
       "type": "fullscreen_pdf",
-      "file": "Testiing Presentation.pdf"
+      "file": "Testing Presentation.pdf"
+    },
+    "image-carousel1": {
+      "name": "123Testing123123",
+      "type": "image-carousel",
+      "images": [
+        "350x350.png"
+      ]
     },
     "video-test": {
       "name": "Demo Video",

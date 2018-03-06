@@ -8,7 +8,11 @@ var overlay = new Overlay();
 var video = document.getElementById('videoDom');
 handyLib.getPresJson(function(data){
   overlay.getNextElement(function(elem){
-    overlay.createOverlayDelay(elem, data['presets'][handyLib.getKey()]['transitionDelay']);
+    if(data['presets'][handyLib.getKey()]['transitionDelay'] != undefined){
+      overlay.createOverlayDelay(elem, data['presets'][handyLib.getKey()]['transitionDelay']);
+    }else{
+      overlay.createOverlay(elem);
+    }
   });
   var file = data['presets'][handyLib.getKey()]['file'];
   if(file != undefined){

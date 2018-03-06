@@ -2079,27 +2079,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var handyLib = new _HandyLib2.default();
 
-// // $()
-//
-// function test(){
-//   console.log('test');
-// }
-//
-// class SelectButton extends React.Component{
-//   constructor(props){
-//     super(props);
-//   }
-//   componentDidMount(){
-//   }
-//   render(){
-//     return(<li><a data-name={this.props.name}>{this.props.name}</a></li>);
-//   }
-// }
-//
-// ReactDOM.render(
-//   <SelectButton name="test" />,
-//   $('#mainContainer')[0]
-// )
+var slideTypes = { 'image-carousel': 'Image carousel', 'fullscreen_pdf': 'Fulscreen Pdf', 'video': 'Video' };
 
 var EditableName = function (_React$Component) {
   _inherits(EditableName, _React$Component);
@@ -2206,8 +2186,58 @@ var TypeDropdown = function (_React$Component2) {
   }
 
   _createClass(TypeDropdown, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      $('a.dropdown-button').dropdown();
+    }
+  }, {
+    key: 'updateSlideType',
+    value: function updateSlideType(obj, type) {
+      var domNode = _reactDom2.default.findDOMNode(this);
+      $.ajax({
+        type: 'POST',
+        url: '/update/' + this.props.loop + '/' + obj.props.data_key + '/type',
+        data: type,
+        success: function success() {
+          Materialize.toast('Successfully change type of ' + obj.props.data_key + ' to ' + type);
+          $(domNode).find('a.dropdown-button').text(slideTypes[type]);
+        }
+      });
+    }
+  }, {
     key: 'render',
-    value: function render() {}
+    value: function render() {
+      var _this4 = this;
+
+      var slideTypesKeys = Object.keys(slideTypes);
+      var dropdownTypes = slideTypesKeys.map(function (key) {
+        return _react2.default.createElement(
+          'li',
+          null,
+          _react2.default.createElement(
+            'a',
+            { href: '#!', onClick: function onClick() {
+                return _this4.updateSlideType(_this4, key);
+              } },
+            slideTypes[key]
+          )
+        );
+      });
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'a',
+          { className: 'dropdown-button btn', href: '#', 'data-activates': "type-dropdown-" + this.props.data_key },
+          slideTypes[this.props.type]
+        ),
+        _react2.default.createElement(
+          'ul',
+          { id: "type-dropdown-" + this.props.data_key, className: 'dropdown-content' },
+          dropdownTypes
+        )
+      );
+    }
   }]);
 
   return TypeDropdown;
@@ -2219,17 +2249,17 @@ var EditableLoopName = function (_React$Component3) {
   function EditableLoopName(props) {
     _classCallCheck(this, EditableLoopName);
 
-    var _this4 = _possibleConstructorReturn(this, (EditableLoopName.__proto__ || Object.getPrototypeOf(EditableLoopName)).call(this, props));
+    var _this5 = _possibleConstructorReturn(this, (EditableLoopName.__proto__ || Object.getPrototypeOf(EditableLoopName)).call(this, props));
 
-    _this4.state = { name: _this4.props.name };
-    return _this4;
+    _this5.state = { name: _this5.props.name };
+    return _this5;
   }
 
   _createClass(EditableLoopName, [{
     key: 'changeValue',
     value: function changeValue(e) {
       function success(e) {
-        console.log(e);
+        // console.log(e)
       }
       $.ajax({
         type: 'POST',
@@ -2249,19 +2279,19 @@ var EditableLoopName = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       //TODO: Create non editable state
       return _react2.default.createElement(
         'div',
         { className: 'valign-wrapper' },
         _react2.default.createElement('input', { value: this.state.name, onChange: function onChange(e) {
-            return _this5.updateValue(e);
+            return _this6.updateValue(e);
           } }),
         _react2.default.createElement(
           'i',
           { className: 'material-icons', style: { cursor: 'pointer' }, onClick: function onClick(e) {
-              return _this5.changeValue(e);
+              return _this6.changeValue(e);
             } },
           'check'
         )
@@ -2272,9 +2302,43 @@ var EditableLoopName = function (_React$Component3) {
   return EditableLoopName;
 }(_react2.default.Component);
 
+var TransitionDelay = function (_React$Component4) {
+  _inherits(TransitionDelay, _React$Component4);
+
+  function TransitionDelay(props) {
+    _classCallCheck(this, TransitionDelay);
+
+    return _possibleConstructorReturn(this, (TransitionDelay.__proto__ || Object.getPrototypeOf(TransitionDelay)).call(this, props));
+  }
+
+  _createClass(TransitionDelay, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      $(_reactDom2.default.findDOMNode(this)).find('input').val(this.props.default == undefined ? '40' : this.props.default);
+      $(_reactDom2.default.findDOMNode(this)).change(function (e) {
+        // $.ajax({
+        //   type: 'POST',
+        //   url: '/update/' +
+        // })
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'p',
+        { className: 'range-field' },
+        _react2.default.createElement('input', { type: 'range', min: '0', max: '100' })
+      );
+    }
+  }]);
+
+  return TransitionDelay;
+}(_react2.default.Component);
+
 $.getJSON('/loop/all.json?rand=' + Math.random(), function (data) {
   var keys = Object.keys(data);
-  console.log(keys);
+  // console.log(keys);
   var allItems = keys.map(function (key) {
     return _react2.default.createElement(
       'li',
@@ -2316,7 +2380,19 @@ $.getJSON('/loop/all.json?rand=' + Math.random(), function (data) {
         allItems
       )
     )
-  ), _react2.default.createElement('div', { id: 'loopEditor' })], $('#mainContainer')[0]);
+  ), _react2.default.createElement('div', { id: 'loopEditor' }), _react2.default.createElement(
+    'div',
+    { className: 'fixed-action-btn' },
+    _react2.default.createElement(
+      'a',
+      { 'class': 'btn-floating btn-large blue tooltipped', 'data-tooltip': 'Menu', 'data-position': 'left' },
+      _react2.default.createElement(
+        'i',
+        { 'class': 'large material-icons' },
+        'menu'
+      )
+    )
+  )], $('#mainContainer')[0]);
   $('.dropdown-button').dropdown({
     inDuration: 300,
     outDuration: 225,
@@ -2344,15 +2420,16 @@ $.getJSON('/loop/all.json?rand=' + Math.random(), function (data) {
     }
   });
   function renderSlidesList(name, target) {
-    console.log(name);
     $.getJSON('/loop/' + name + '?rand=' + Math.random(), function (slide_data) {
 
       var keys = Object.keys(slide_data['presets']);
       var editableElements = keys.map(function (key) {
         return _react2.default.createElement(
           'li',
-          { className: 'collection-item avatar #eeeeee grey lighten-3' },
+          { className: 'collection-item avatar #eeeeee grey lighten-3', 'data-key': key },
           _react2.default.createElement(EditableName, { name: slide_data['presets'][key]['name'], data_key: key, file: name }),
+          _react2.default.createElement(TypeDropdown, { data_key: key, type: slide_data['presets'][key]['type'], loop: name }),
+          _react2.default.createElement(TransitionDelay, { 'default': slide_data['presets'][key]['transitionDelay'] }),
           _react2.default.createElement(
             'i',
             { className: 'secondary-content material-icons text-black grab' },
@@ -2361,30 +2438,67 @@ $.getJSON('/loop/all.json?rand=' + Math.random(), function (data) {
         );
       });
       _reactDom2.default.render([_react2.default.createElement('div', { className: 'divider' }), _react2.default.createElement(
+        'div',
+        { className: 'row' },
+        _react2.default.createElement(
+          'div',
+          { className: 'col s12' },
+          _react2.default.createElement(
+            'div',
+            { className: 'container' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              '2. Build the loop'
+            )
+          )
+        )
+      ), _react2.default.createElement(
         'ul',
         { id: 'slides', className: 'collection' },
         editableElements
       )], target);
-      var dragObj = dragula($('#slides')[0], {
+      $('.grab').css({ cursor: 'grab' });
+      $('.grab').on('mousedown', function (e) {
+        $(this).parent().css({ cursor: 'grabbing' });
+      });
+      $('.grab').parent().on('mouseup', function (e) {
+        $('li').css({ cursor: 'default' });
+      });
+      $('.grab').on('mouseup', function (e) {
+        $('li.collection-item').css({ cursor: 'default' });
+      });
+      var dragObj = dragula({
         isContainer: function isContainer(el) {
           return false; // only elements in drake.containers will be taken into account
         },
         moves: function moves(el, source, handle, sibling) {
-          return true; // elements are always draggable by default
-        },
-        accepts: function accepts(el, target, source, sibling) {
-          return true; // elements can be dropped in any of the `containers` by default
-        },
-        invalid: function invalid(el, handle) {
-          return false; // don't prevent any drags from initiating by default
-        },
-        direction: 'vertical', // Y axis is considered when determining where an element would be dropped
-        copy: false, // elements are moved by default, not copied
-        copySortSource: false, // elements in copy-source containers can be reordered
-        revertOnSpill: false, // spilling will put the element back where it was dragged from, if this is true
-        removeOnSpill: false, // spilling will `.remove` the element, if this is true
-        mirrorContainer: document.body, // set the element that gets mirror elements appended
-        ignoreInputTextSelection: true
+          if ($(handle).hasClass('grab')) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+      dragObj.containers.push(document.getElementById('slides'));
+      dragObj.on('drop', function (e) {
+        // console.log(slide_data['presets']);
+        // var objX = slide_data['presets']
+        var tmpPresets = {};
+        $('ul#slides').children().each(function (i, val) {
+          // console.log(slide_data['presets'][$(val).data('key')])
+          tmpPresets[$(val).data('key')] = slide_data['presets'][$(val).data('key')];
+          // $('ul#slides').children()
+          // console.log($(val).data('key'));
+        });
+        // console.log(tmpPresets);
+        $.ajax({
+          type: 'POST',
+          url: '/updateBulkPresets/' + name + '?rand=' + Math.random(),
+          data: JSON.stringify(tmpPresets),
+          contentType: 'application/json',
+          success: Materialize.toast("Successfully updated loop order!")
+        });
       });
     });
   }

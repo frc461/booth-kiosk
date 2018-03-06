@@ -18432,7 +18432,7 @@ var InactivityCounter = function (_React$Component) {
   }, {
     key: 'resetCounter',
     value: function resetCounter() {
-      this.setState({ seconds: 40 });
+      this.setState({ seconds: this.props.length });
       $('.overlay').slideUp();
     }
   }, {
