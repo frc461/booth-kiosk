@@ -1,0 +1,82 @@
+{
+    "name" : "2019",
+    "presets" : {
+        "wlis" : {
+            "name" : "WLIS Outreach",
+            "type" : "image-carousel",
+            "images" : [
+                "47235080_375433126533635_178907886918959623_n.jpg",
+                "IMG-5789editted.jpg",
+                "IMG-5805.JPG",
+                "IMG-5844.JPG"
+            ]
+        },
+        "girlscoders" : {
+            "name" : "Girl Coders",
+            "type" : "image-carousel",
+            "images" : [
+                "DSC_4653.JPG"
+            ]
+        },
+        "unified" : {
+            "name" : "Unified Robotics",
+            "type" : "image-carousel",
+            "images" : [
+                "unifiedmeeting.jpg"
+            ]
+        },
+        "ymca" : {
+            "name" : "YMCA Camp",
+            "type" : "image-carousel",
+            "images" : [
+                "YMCA.jpg"
+            ]
+        },
+        "girlscouts" : {
+            "name" : "Girl Scouts",
+            "type" : "image-carousel",
+            "images" : [
+                "DSC_6030.JPG"
+            ]
+        },
+        "fll-jr" : {
+            "name" : "FLL Jr.",
+            "type" : "image-carousel",
+            "images" : [
+                "FLL Jr.JPG",
+                "FLL2.JPG",
+                "JRFLL.JPG"
+            ]
+        },
+        "first-forums" : {
+            "name" : "First Forums",
+            "type" : "image-carousel",
+            "images" : [
+                "forums1.jpg",
+                "forums2.jpg"
+            ]
+        },
+        "minorities" : {
+            "name" : "Minorities in Engineering",
+            "type" : "image-carousel",
+            "images" : [
+                "minorities4.jpg"
+            ]
+        },
+        "stemclub" : {
+            "name" : "Stem Club",
+            "type" : "image-carousel",
+            "images" : [
+                "StemClub2.jpg",
+                "StemClub1.jpg"
+            ]
+        },
+        "wolfpark" : {
+            "name" : "Wolf Park",
+            "type" : "image-carousel",
+            "images" : [
+                "wolfpark.jpg"
+            ]
+        }
+    }
+}
